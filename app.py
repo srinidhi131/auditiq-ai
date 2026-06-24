@@ -317,6 +317,44 @@ question = st.text_area(
 if st.button("Analyze"):
 
     if not question.strip():
+        st.warning("Please enter a question.")
+
+    else:
+        with st.spinner("🕵️ Connecting the compliance dots..."):
+
+            try:
+                model = genai.GenerativeModel("gemini-1.5-flash-8b")
+
+                prompt = f"""
+                {SYSTEM_PROMPT}
+
+                The following documents are the ONLY source of truth.
+
+                DOCUMENTS:
+                {document_text}
+
+                USER QUESTION:
+                {question}
+                """
+
+                response = model.generate_content(prompt)
+
+                response_text = response.text
+
+                if "non-compliant" in response_text.lower():
+                    st.error("🔴 Compliance Status: Non-Compliant")
+                elif "partially compliant" in response_text.lower():
+                    st.warning("🟠 Compliance Status: Partially Compliant")
+                elif "compliant" in response_text.lower():
+                    st.success("🟢 Compliance Status: Compliant")
+
+                st.markdown(response_text)
+
+            except Exception as e:
+                st.error("⚠️ AuditIQ could not process this request.")
+                st.code(str(e))
+
+    if not question.strip():
 
         st.warning("Please enter a question.")
 
