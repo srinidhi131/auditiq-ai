@@ -323,7 +323,7 @@ if st.button("Analyze"):
         with st.spinner("🕵️ Connecting the compliance dots..."):
 
             try:
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
                 prompt = f"""
                 {SYSTEM_PROMPT}
