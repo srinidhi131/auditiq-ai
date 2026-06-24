@@ -325,7 +325,7 @@ if st.button("Analyze"):
         with st.spinner("Reviewing compliance records..."):
 
             model = genai.GenerativeModel(
-                "gemini-2.5-flash"
+                "gemini-1.5-flash-8b"
             )
 
             prompt = f"""
@@ -342,22 +342,22 @@ if st.button("Analyze"):
             {question}
             """
 
-            response = model.generate_content(prompt)
+            try:
+                response = model.generate_content(prompt)
+                response_text = response.text
 
-            response_text = response.text
+                if "non-compliant" in response_text.lower():
+                    st.error("🔴 Compliance Status: Non-Compliant")
+                elif "partially compliant" in response_text.lower():
+                    st.warning("🟠 Compliance Status: Partially Compliant")
+                elif "compliant" in response_text.lower():
+                    st.success("🟢 Compliance Status: Compliant")
 
-            # Compliance Status Detection
+                st.markdown(response_text)
 
-            if "non-compliant" in response_text.lower():
-                st.error("🔴 Compliance Status: Non-Compliant")
-
-            elif "partially compliant" in response_text.lower():
-                st.warning("🟠 Compliance Status: Partially Compliant")
-
-            elif "compliant" in response_text.lower():
-                st.success("🟢 Compliance Status: Compliant")
-
-            st.markdown(response_text)
+            except Exception as e:
+                st.error("⚠️ AuditIQ is temporarily unable to process this request.")
+                st.info("This is likely due to free-tier Gemini API quota limits. Please try again in a few minutes.")
 
 # ---------------------------------------------------
 
